@@ -10,6 +10,7 @@
       var originUrl = tab.url;
       var originTitle = tab.title || '';
       var title = originTitle.split('-')[0].trim();
+      var tempTagId = -1;
 
       $('#js-url').val(originUrl);
       $('#js-title').val(title);
@@ -17,7 +18,7 @@
 
       function getTags() {
         bg.jqAjax(server + 'api/tags/', 'GET', {}, function (reply) {
-          // console.log('get tags', reply);
+          console.log('get tags', reply);
           $('.js-tags-loading').removeClass('active');
 
           if (reply.code == 0) {
@@ -29,31 +30,48 @@
             for (let tag of tags) {
               $('#js-add-tag').before(`<div class="ui label js-tag" id="${tag.id}" style="margin:3px 10px 8px 0px;cursor:default;">${tag.name}</div>`);
             }
+            
 
             $("html").css("width", "750px");
             $("html").css("height", $(".js-add-bookmark").height() + 25);
-
+            // 第一个默认设置被选
             if (tags.length > 0) {
               $('#' + tags[0].id).addClass('green');
               tagId = tags[0].id;
             }
 
-            $('#js-add-tag').click(function () {
-              toastr.info('请到网站分类页面添加分类，3秒后自动打开新的网页。', '提示');
-              setTimeout(() => {
-                chrome.tabs.create({
-                  url: server + '#/tags',
-                });
-                window.close();
-              }, 3000);
+            $("#js-tag-input").keypress(function (even) {
+              if (even.which == 13) {// 回车按键
+                newTagName = $("#js-tag-input").val();
+                //TODO zhouxiang==> 这里添加一个green的、id为-1的新tag
+                $('#js-add-tag').before(`<div class="ui label js-tag green" id="${tempTagId--}" style="margin:3px 10px 8px 0px;cursor:default;">${newTagName}</div>`);
+                
+              }
             });
 
-            $('.js-tag').click(function () {
-              $('.js-tag.green').removeClass('green');
-              tagId = $(this).attr('id');
-              $('#' + tagId).addClass('green');
+            $('#js-add-tag').click(function () {
+              // toastr.info('请到网站分类页面添加分类，3秒后自动打开新的网页。', '提示');
+              // setTimeout(() => {
+              //   chrome.tabs.create({
+              //     url: server + '#/tags',
+              //   });
+              //   window.close();
+              // }, 3000);
+
             });
-          } else if (reply.code == 401) {
+
+            // 这里是 选中就重新设置
+            $('.js-tag').live("click", function () {
+              // $('.js-tag.green').removeClass('green');
+              tagId = $(this).attr('id');
+              if ($('#' + tagId).hasClass('green')) {
+                $('#' + tagId).removeClass('green');
+              } else {
+                $('#' + tagId).addClass('green');
+              }
+            });
+
+          } else if (reply.code == 401) {// 登录逻辑
             $(".js-add-bookmark").hide();
             $(".js-login").show();
             $("html").css("width", "350px");
@@ -80,11 +98,28 @@
                 }
               })
             });
+          } else {// 根本就没有设置后台
+            alert("网站设置错误，一定能要设置成http://localhost:2000/ 形式");
           }
         });
       }
 
+      function getRecommendedTags() {
+        bg.jqAjax(server + 'api/getKeyword/', 'POST', JSON.stringify({text: title}), function (reply) {
+          //alert(JSON.stringify(reply));
+          if (reply.code != 0) {
+            return;
+          }
+          for(var i in reply.data.ke) {
+            $('#js-recommendation-tag').before(`<div class="ui label js-tag" id="${tempTagId--}" style="margin:3px 10px 8px 0px;cursor:default;">${reply.data.ke[i].word}</div>`);
+          }
+          
+        });
+      }
+
       getTags();
+
+      getRecommendedTags();
 
       $('#js-restore-title').click(() => {
         $('#js-title').val(originTitle);
@@ -96,11 +131,19 @@
 
       $('.js-send-bookmark').click(() => {
         var url = server + 'api/bookmarkAdd/';
+        // 拿到所有的tags,不再用tagId来代表
+        tagsJson = [];
+        tagsNames = [];
+        $('.js-tag.green').each(function() {
+          tagsJson.push($(this).attr('id'));
+          tagsNames.push($(this).text());
+        });
         var params = {
           url: $('#js-url').val(),
           title: $('#js-title').val(),
           public: $('.ui.checkbox.js-public').checkbox('is checked') ? '1' : '0',
-          tagId,
+          tagId: tagsJson,
+          tagName: tagsNames.join(","),
           description: $('#js-desc').val(),
         };
 
@@ -113,8 +156,8 @@
         } else {
           bg.jqAjax(url, 'POST', JSON.stringify(params), function (reply) {
             if (reply.code == 0) {
-              // var msg = '[ ' + params.title + ' ] 添加成功！' + '\n窗口 1 秒后自动关闭。';
-              // toastr.success(msg, '提示');
+              var msg = '[ ' + params.title + ' ] 添加成功！' + '\n窗口 1 秒后自动关闭。';
+              toastr.success(msg, '提示');
               $('body').dimmer('show');
               setTimeout(() => { window.close(); }, 1000);
             } else {
