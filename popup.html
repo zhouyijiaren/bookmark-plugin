@@ -30,14 +30,14 @@
       </div>
     </div>
     <form class="ui form js-add-bookmark" style="display: none;">
-      <h3 class="ui header"><span class="js-popup-server"></span> - 添加书签</h3>
+      <h3 class="ui header"><span class="js-popup-server"></span> - 添加书签 <div class="ui grey mini button js-unlogin" >注销</div></h3>
       <div class="ui divider" style="margin-top: 20px; margin-bottom: 20px;"></div>
       <div class="ui leftaligned grid">
         <div class="left aligned two column row">
           <div class="column">
             <div class="required sixteen wide field">
               <label>书签链接</label>
-              <input id="js-url" type="text" placeholder="输粘贴网页地址，如：https://b.lucq.fun/" />
+              <input id="js-url" type="text" placeholder="输粘贴网页地址，如：https://www.baidu.com/" />
             </div>
           </div>
           <div class="column">
@@ -104,6 +104,10 @@
         <label>密码</label>
         <input id="js-password" type="password" />
       </div>
+      <div class="actions" style="float: left; margin-left: -5px;">
+        <div class="ui red mini button js-register" style="cursor: default;">去注册</div>
+      </div>
+
       <div class="actions" style="float: right; margin-right: -5px;">
         <div class="ui grey mini button js-cancel" style="cursor: default;">取消</div>
         <div class="ui blue mini button js-send-login" style="cursor: default; margin-left: 15px;">登录</div>

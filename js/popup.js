@@ -149,6 +149,16 @@
         window.close();
       });
 
+      $('.js-register').click(() => {
+        window.open(server+"#/register")
+      });
+      
+      $('.js-unlogin').click(() => {
+        chrome.storage.sync.set({ Authorization: '' }, function () {
+          bg.reloadStorage(getTags);
+        });
+      });
+
       $('.js-send-bookmark').click(() => {
         var url = server + 'api/bookmarkAdd/';
         // 拿到所有的tags,不再用tagId来代表
