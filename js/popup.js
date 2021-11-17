@@ -1,6 +1,6 @@
 (function (window) {
   var server = 'https://b.lucq.fun/';
-  chrome.storage.sync.get({ bookmarkServer: 'https://b.lucq.fun/' }, function (items) {
+  chrome.storage.sync.get({ bookmarkServer: 'https://49.232.31.142:2000/' }, function (items) {
     server = items.bookmarkServer;
     $('.js-popup-server').text(server);
     chrome.tabs.getSelected(null, function (tab) {
@@ -16,6 +16,7 @@
       $('#js-title').val(title);
       $('.js-tags-loading').addClass('active');
 
+      // 拿
       function getTags() {
         bg.jqAjax(server + 'api/tags/', 'GET', {}, function (reply) {
           console.log('get tags', reply);
@@ -99,11 +100,17 @@
               })
             });
           } else {// 根本就没有设置后台
-            alert("网站设置错误，一定能要设置成http://localhost:2000/ 形式");
+            alert("网站设置错误，一定能要设置成"+server+"形式");
           }
+          // 必须在返回以后同步执行
+          getBeforeTags();
+        }, function (error) {
+          alert("Server error, it may be down. You can change server url in Plugin config.");
+          window.close();
         });
+        
       }
-
+      // 拿推荐的tag
       function getRecommendedTags() {
         bg.jqAjax(server + 'api/getKeyword/', 'POST', JSON.stringify({text: title}), function (reply) {
           //alert(JSON.stringify(reply));
@@ -114,6 +121,19 @@
             $('#js-recommendation-tag').before(`<div class="ui label js-tag" id="${tempTagId--}" style="margin:3px 10px 8px 0px;cursor:default;">${reply.data.ke[i].word}</div>`);
           }
           
+          $("html").css("height", $(".js-add-bookmark").height() + 25);
+        });
+      }
+      // 拿之前设置过的tag
+      function getBeforeTags() {
+        bg.jqAjax(server + 'api/bookmarkByUrl/', 'GET', {url: originUrl}, function (reply) {
+          if (reply.code != 0) {
+            return;
+          }
+          console.log('get befores', reply);
+          for(var i of reply.data.tagId.split(',')) {
+            $('#' + i).addClass('green');
+          }
         });
       }
 
@@ -147,7 +167,9 @@
           description: $('#js-desc').val(),
         };
 
-        if (!/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/.test(params.url)) {
+        // 匹配的正则表达式，后期再详细解析
+        if (!/http(s)?:\/\/.*/.test(params.url)) {
+          // if (!/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/.test(params.url)) {
           toastr.error('检撤到您的书签链接非法，是否忘记加http或者https了？建议直接从打开浏览器地址栏复制出来直接粘贴到输入框。', '错误');
         } else if (!tagId) {
           toastr.error('您必须要选择一个分类！可新增分类，如果暂时没想到放到哪个分类，可以先选择未分类', '错误');
