@@ -1,9 +1,9 @@
 console.log('bookmark init background');
 // chrome.storage.sync.set({ Authorization: "" });
-var server = 'https://b.lucq.fun/';
+var server = 'http://49.232.31.142:2000/';
 var Authorization = "";
 function reloadStorage(callBack) {
-  chrome.storage.sync.get({ bookmarkServer: 'https://b.lucq.fun/', Authorization: '' }, function (items) {
+  chrome.storage.sync.get({ bookmarkServer: 'http://49.232.31.142:2000/', Authorization: '' }, function (items) {
     console.log('reloadStorage ', items);
     server = items.bookmarkServer;
     Authorization = items.Authorization;

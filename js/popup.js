@@ -1,6 +1,6 @@
 (function (window) {
-  var server = 'https://b.lucq.fun/';
-  chrome.storage.sync.get({ bookmarkServer: 'https://49.232.31.142:2000/' }, function (items) {
+  var server = 'http://49.232.31.142:2000/';
+  chrome.storage.sync.get({ bookmarkServer: 'http://49.232.31.142:2000/' }, function (items) {
     server = items.bookmarkServer;
     $('.js-popup-server').text(server);
     chrome.tabs.getSelected(null, function (tab) {
@@ -44,9 +44,29 @@
             $("#js-tag-input").keypress(function (even) {
               if (even.which == 13) {// 回车按键
                 newTagName = $("#js-tag-input").val();
+                // 清空input
+                $("#js-tag-input").val('');
+                let is_add_new = true;
+                // 如果newTagName和某个js-tag.green一样，就报警
+                $('.js-tag.green').each(function() {
+                  if(newTagName == $(this).text()) {
+                    toastr.error('已选择这个tag', '错误');
+                    is_add_new = false;
+                  }
+                });
+                // 如果newTagName和每个js-tag的值一样
+                $('.js-tag').each(function() {
+                  if(newTagName == $(this).text()) {
+                    $(this).addClass('green');
+                    is_add_new = false;
+                  }
+                });
+                if (!is_add_new) {
+                  return;
+                }
                 //TODO zhouxiang==> 这里添加一个green的、id为-1的新tag
                 $('#js-add-tag').before(`<div class="ui label js-tag green" id="${tempTagId--}" style="margin:3px 10px 8px 0px;cursor:default;">${newTagName}</div>`);
-                
+
               }
             });
 
