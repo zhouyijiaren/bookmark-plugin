@@ -1,40 +1,9 @@
 console.log('bookmark init background');
-// chrome.storage.sync.set({ Authorization: "" });
-var server = 'http://49.232.31.142:2000/';
-var Authorization = "";
-function reloadStorage(callBack) {
-  chrome.storage.sync.get({ bookmarkServer: 'http://49.232.31.142:2000/', Authorization: '' }, function (items) {
-    console.log('reloadStorage ', items);
-    server = items.bookmarkServer;
-    Authorization = items.Authorization;
-    callBack && callBack();
-  });
-}
+loadScript('js/externe/jquery-1.8.3.js.js').then(function () {
+  /* ... */
+});
+// chrome.storage.local.set({ Authorization: "" });
 
-function jqAjax(url, type, data, successCallback, errorCallback, beforeSendCallback, completeCallback) {
-  $.ajax({
-    url: url,
-    type: type, //GET POST
-    contentType: 'application/json', //必须有
-    async: true, //或false,是否异步
-    data: data,
-    timeout: 3000, //超时时间
-    dataType: 'json', //返回的数据格式：json/xml/html/script/jsonp/text
-    success: function (data, textStatus, jqXHR) {
-      successCallback && successCallback(data, textStatus, jqXHR);
-    },
-    error: function (xhr, textStatus) {
-      errorCallback && errorCallback(xhr, textStatus);
-    },
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Authorization', Authorization);
-      beforeSendCallback && beforeSendCallback(xhr);
-    },
-    complete: function () {
-      completeCallback && completeCallback();
-    },
-  });
-}
 
 function addBookmark(info, tab, tagId) {
   let url = server + 'api/bookmarkAdd/';

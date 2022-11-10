@@ -10,6 +10,7 @@
     <script type="text/javascript" src="js/externe/semantic.min.js"></script>
     <script type="text/javascript" src="js/externe/toastr.min.js"></script>
     <script type="text/javascript" src="js/popup.js"></script>
+    <script type="text/javascript" src="js/content-script.js"></script>
     <style>
       form {
         margin: 20px;
@@ -30,7 +31,7 @@
       </div>
     </div>
     <form class="ui form js-add-bookmark" style="display: none;">
-      <h3 class="ui header"><span class="js-popup-server"></span> - 添加书签 <div class="ui grey mini button js-unlogin" >注销</div></h3>
+      <h3 class="ui header"><span class="js-popup-server" style="display: none;"></span> - 添加书签 <div class="ui grey mini button js-unlogin" >注销</div></h3>
       <div class="ui divider" style="margin-top: 20px; margin-bottom: 20px;"></div>
       <div class="ui leftaligned grid">
         <div class="left aligned two column row">
@@ -94,7 +95,7 @@
       <div class="ui inverted dimmer js-login-loading">
         <div class="ui text loader">登录中...</div>
       </div>
-      <h3 class="ui header"><span class="js-popup-server"></span> - 登录</h3>
+      <h3 class="ui header"><span class="js-popup-server" style="display: none;"></span> 登录</h3>
       <div class="ui divider" style="margin-top: 20px; margin-bottom: 20px;"></div>
       <div class="required field">
         <label>账号</label>

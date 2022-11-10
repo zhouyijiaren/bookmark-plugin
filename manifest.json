@@ -1,22 +1,21 @@
 {
-  "manifest_version": 2,
-  "name": "书签快速添加",
-  "version": "2.0.3",
-  "description": "快速将书签添加到系统中",
+  "manifest_version": 3,
+  "name": "Tag",
+  "version": "3.0.1",
+  "description": "多tag，推荐tag",
   "icons": {
     "16": "img/icon.png",
     "48": "img/icon.png",
     "128": "img/icon.png"
   },
   "background": {
-    "page": "background.html"
+    "service_worker": "js/background.js"
   },
   "options_page": "options.html",
   "options_ui": {
-    "page": "options.html",
-    "chrome_style": true
+    "page": "options.html"
   },
-  "browser_action": {
+  "action": {
     "default_icon": "img/icon.png",
     "default_title": "点击将当前页快速添加书签列表",
     "default_popup": "popup.html"
@@ -30,7 +29,9 @@
     }
   ],
   "permissions": ["contextMenus", "activeTab", "storage"],
-  "web_accessible_resources": ["js/inject.js"],
+  "host_permissions": [
+    "*://*/*"
+  ],
   "homepage_url": "http://49.232.31.142:2000/",
   "omnibox": {
     "keyword": "bookmark"
